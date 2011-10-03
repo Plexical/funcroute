@@ -21,15 +21,17 @@ class Handler(object):
         qs = env.get('QUERY_STRING', False)
         return path, qs and parse_qs(qs) or {}
 
+    def maybee_reload(self):
+        mtime = self.mtime
+        if mtime > self.lastmod:
+            print('Responder: changes to module detected, reloading..')
+            self.mod = reload(self.mod)
+            self.debug = getattr(self.mod, 'debug', False)
+            self.lastmod = mtime
+
     def __call__(self, env, start_response):
         if self.debug:
-            mtime = self.mtime
-            if mtime > self.lastmod:
-                print('Changes to module detected, reloading..')
-                self.mod = reload(self.mod)
-                self.debug = getattr(self.mod, 'debug', False)
-                self.lastmod = mtime
-
+            self.maybee_reload()
         path, args = self.parse_input(env)
 
         if len(path) == 0:
