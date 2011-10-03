@@ -39,8 +39,8 @@ class Handler(object):
 
         try:
             if not headers:
-                headers = [('Content-Type', 'text/html')]
-            start_response(status, headers)
+                headers = {'Content-Type': 'text/html'}
+            start_response(status, [(k, v) for k, v in headers.iteritems()])
             return ('\n'.join(response),)
         except AttributeError, e:
             start_response('404 NOT FOUND', [('Content-Type', 'text/plain')])
