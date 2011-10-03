@@ -46,9 +46,6 @@ class Handler(object):
                 headers = {'Content-Type': 'text/html'}
             start_response(status, [(k, v) for k, v in headers.iteritems()])
             return ('\n'.join(response),)
-        except AttributeError, e:
-            start_response('404 NOT FOUND', [('Content-Type', 'text/plain')])
-            return ('XXX TBD: Response method not found',)
         except StandardError, e:
             start_response('500 INTERNAL SERVER ERROR',
                            [('Content-Type', 'text/plain')])
