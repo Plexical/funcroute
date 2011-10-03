@@ -4,7 +4,7 @@ from collections import deque
 from wsgiref.simple_server import make_server
 from cgi import parse_qs, escape
 
-class Handler(object):
+class Responder(object):
 
     def __init__(self, name):
         self.name = name
@@ -54,6 +54,6 @@ class Handler(object):
             return ('XXX TBD: Response method raised exception',)
 
 if __name__ == '__main__':
-    rsp = Handler('labmod')
+    rsp = Responder('labmod')
     httpd = make_server('', 8000, rsp)
     httpd.serve_forever()
