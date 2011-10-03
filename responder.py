@@ -33,9 +33,13 @@ class Handler(object):
         path, args = self.parse_input(env)
 
         if len(path) == 0:
-            status, headers, response = self.mod.default(*path)
+            status, headers, response = self.mod.default(*path, **args)
         else:
-            status, headers, response = getattr(self.mod, path[0])(*path)
+            named = getattr(self.mod, path[0], False)
+            if named:
+                status, headers, response = named(*path, **args)
+            else:
+                status, headers, response = self.mod.default(*path, **args)
 
         try:
             if not headers:
