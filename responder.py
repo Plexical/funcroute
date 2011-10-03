@@ -6,10 +6,12 @@ from cgi import parse_qs, escape
 
 class Responder(object):
 
-    def __init__(self, name):
-        self.name = name
-        m = self.mod = __import__(name)
-        self.debug = getattr(m, 'debug', False)
+    def __init__(self, module):
+        if isinstance(module, 'basestring'):
+            self.mod = __import__(module)
+        else:
+            self.mod = module
+        self.debug = getattr(self.mod, 'debug', False)
         self.lastmod = self.mtime
 
     @property
