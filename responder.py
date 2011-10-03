@@ -6,13 +6,14 @@ from cgi import parse_qs, escape
 
 class Responder(object):
 
-    def __init__(self, module):
+    def __init__(self, module, app=None):
         if isinstance(module, 'basestring'):
             self.mod = __import__(module)
         else:
             self.mod = module
         self.debug = getattr(self.mod, 'debug', False)
         self.lastmod = self.mtime
+        self.app = app
 
     @property
     def mtime(self):
@@ -34,16 +35,15 @@ class Responder(object):
     def __call__(self, env, start_response):
         if self.debug:
             self.maybee_reload()
-        path, args = self.parse_input(env)
 
-        if len(path) == 0:
-            status, headers, response = self.mod.default(*path, **args)
+        path, args = self.parse_input(env)
+        named = getattr(self.mod, path[0], False)
+        if named:
+            status, headers, response = named(*path, **args)
+        elif self.app:
+            return self.app(env, start_response)
         else:
-            named = getattr(self.mod, path[0], False)
-            if named:
-                status, headers, response = named(*path, **args)
-            else:
-                status, headers, response = self.mod.default(*path, **args)
+            status, headers, response = self.mod.default(*path, **args)
 
         try:
             if not headers:
