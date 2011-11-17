@@ -1,13 +1,13 @@
 import webtest
 import mock
 
-from funcroute import Responder
+from funcroute import Matcher
 
 from funcroute.test import support
 from funcroute.test.support import Expando
 
 def pytest_funcarg__responder(request):
-    return Responder(Expando())
+    return Matcher(Expando())
 
 def pytest_funcarg__default(request):
     default = mock.Mock()
@@ -25,10 +25,10 @@ def pytest_funcarg__defaultfix(request):
     return (handler, responder, wt, default)
 
 def test_init_w_str():
-    assert Responder('funcroute.labmod')
+    assert Matcher('funcroute.labmod')
 
 def test_init_w_obj():
-    assert Responder(mock.Mock())
+    assert Matcher(mock.Mock())
 
 def test_root_to_default(defaultfix):
     handler, responder, wt, default = defaultfix

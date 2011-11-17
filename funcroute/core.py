@@ -7,7 +7,7 @@ from cgi import parse_qs, escape
 class Missing(Exception):
     pass
 
-class Responder(object):
+class Matcher(object):
 
     def __init__(self, handler, app=None):
         if isinstance(handler, basestring):
@@ -32,7 +32,7 @@ class Responder(object):
     def maybee_reload(self):
         mtime = self.mtime
         if mtime > self.lastmod:
-            print('Responder: changes to module detected, reloading..')
+            print('Matcher: changes to module detected, reloading..')
             self.handler = reload(self.handler)
             self.debug = getattr(self.handler, 'debug', False)
             self.lastmod = mtime
@@ -69,6 +69,6 @@ class Responder(object):
             return ('Resource not found',)
 
 if __name__ == '__main__':
-    rsp = Responder('labmod')
+    rsp = Matcher('labmod')
     httpd = make_server('', 8000, rsp)
     httpd.serve_forever()
