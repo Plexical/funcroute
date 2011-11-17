@@ -21,8 +21,8 @@ setup(
     version=meta.version,
     author='Jacob Oscarson',
     author_email='jacob@plexical.com',
-    # install_requires=open(os.path.join('deps',
-    #                                    'run.txt')).readlines()
+    install_requires=open(os.path.join('deps',
+                                       'run.txt')).readlines()
 )
 
 @task
@@ -39,7 +39,7 @@ def virtualenv():
 @task
 def env():
     "Ensure virtualenv exists and is up to date"
-    # sh('./bin/pip install -r deps/run.txt --upgrade')
+    sh('./bin/pip install -r deps/run.txt --upgrade')
     sh('./bin/pip install -r deps/developer.txt --upgrade')
 
 @task
