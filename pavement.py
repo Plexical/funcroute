@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""pavement.py -- pavement for de-vice.
+"""pavement.py -- pavement for Responder.
 
 Copyright 2011 Plexical. See LICENCE for permissions.
 """
