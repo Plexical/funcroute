@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""pavement.py -- pavement for Responder.
+"""pavement.py -- pavement for Funcroute.
 
 Copyright 2011 Plexical. See LICENCE for permissions.
 """
@@ -10,14 +10,14 @@ from paver.easy import *
 from paver.setuputils import setup
 
 try:
-    from responder import meta
+    from funcroute import meta
 except ImportError:
     sys.path.append('.')
-    from responder import meta
+    from funcroute import meta
 
 setup(
     name=meta.name,
-    packages=('responder'),
+    packages=('funcroute'),
     version=meta.version,
     author='Jacob Oscarson',
     author_email='jacob@plexical.com',
