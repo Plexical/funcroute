@@ -70,7 +70,7 @@ class Matcher(object):
                            [('Content-Type', 'text/plain')])
             return ('Resource not found',)
 
-def send(body, mime='text/html', status='status 200', **extra_headers):
+def send(body, mime='text/html', status='200 OK', **extra_headers):
     headers = {'Content-Type': mime}
     headers.update(extra_headers)
     return (status, headers, (body,))
@@ -80,6 +80,10 @@ def text(body, status='200 OK', **extra_headers):
 
 def html(body, status='200 OK', **extra_headers):
     return send(body, 'text/html', status, **extra_headers)
+
+def json(data, status='200 OK', **extra_headers):
+    from json import dumps
+    return send(dumps(data), 'application/json', **extra_headers)
 
 if __name__ == '__main__':
     rsp = Matcher('labmod')

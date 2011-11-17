@@ -1,6 +1,8 @@
 import webtest
 import mock
 
+from json import loads, dumps
+
 from funcroute import *
 
 from funcroute.test import support
@@ -62,3 +64,16 @@ def test_text_defaults():
 def test_html_other_status():
     assert (html('foo', '404 NOT FOUND') ==
             ('404 NOT FOUND', {'Content-Type': 'text/html'}, ('foo',)) )
+
+def test_post(wtfix):
+    handler, responder, wt = wtfix
+
+    handler.api = (lambda *p, **args:
+                       json(loads(args['funcroute_stream'].read())) )
+
+    res = wt.post('/api',
+                  dumps('foo'),
+                  {'Content-Type': 'application/json'})
+
+    assert (res ==
+            '200 OK', {'Content-Type': 'application/json'}, '"foo"')
