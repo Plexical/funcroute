@@ -44,6 +44,7 @@ def env():
 
 @task
 def clean():
+    "Remove everything created by the build process"
     path('bin').rmtree()
     path('lib').rmtree()
     path('include').rmtree()
