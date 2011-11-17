@@ -68,8 +68,8 @@ def test_html_other_status():
 def test_post(wtfix):
     handler, responder, wt = wtfix
 
-    handler.api = (lambda *p, **args:
-                       json(loads(args['funcroute_stream'].read())) )
+    handler.api = (lambda req, *segs:
+                       json(loads(req.body)) )
 
     res = wt.post('/api',
                   dumps('foo'),

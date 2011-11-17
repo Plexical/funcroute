@@ -1,11 +1,16 @@
 import os
 from collections import deque
 
+import webob
+
 from wsgiref.simple_server import make_server
 from cgi import parse_qs, escape
 
 class Missing(Exception):
     pass
+
+def segment(request):
+    return deque(s for s in request.path.split('/') if s)
 
 class Matcher(object):
 
@@ -41,19 +46,19 @@ class Matcher(object):
         if self.debug:
             self.maybee_reload()
 
-        path, args = self.parse_input(env)
-        if 'wsgi.input' in env:
-            args['funcroute_stream'] = env['wsgi.input']
-        named = getattr(self.handler, path and path[0] or 'root', False)
+        request = webob.Request(env)
+        segs = segment(request)
+
+        named = getattr(self.handler, segs and segs[0] or 'root', False)
         try:
             if named:
-                status, headers, response = named(*path, **args)
+                status, headers, response = named(request, *segs)
             elif self.app:
                 return self.app(env, start_response)
             else:
                 try:
-                    status, headers, response = self.handler.default(*path,
-                                                                      **args)
+                    status, headers, response = self.handler.default(request,
+                                                                     *segs)
                 except AttributeError:
                     raise Missing
 
