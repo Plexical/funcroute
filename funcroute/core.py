@@ -88,7 +88,10 @@ def html(body, status='200 OK', **extra_headers):
 
 def json(data, status='200 OK', **extra_headers):
     from json import dumps
-    return send(dumps(data), 'application/json', **extra_headers)
+    return send(dumps(data),
+                'application/json',
+                status=status,
+                **extra_headers)
 
 if __name__ == '__main__':
     rsp = Matcher('labmod')

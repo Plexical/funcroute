@@ -65,6 +65,15 @@ def test_html_other_status():
     assert (html('foo', '404 NOT FOUND') ==
             ('404 NOT FOUND', {'Content-Type': 'text/html'}, ('foo',)) )
 
+def test_json_defaults():
+    assert (json('foo') ==
+            ('200 OK', {'Content-Type': 'application/json'}, ('"foo"',)))
+
+def test_json_other_status():
+    assert (json('foo', '404') ==
+            ('404', {'Content-Type': 'application/json'}, ('"foo"',)))
+
+
 def test_post(wtfix):
     handler, responder, wt = wtfix
 
