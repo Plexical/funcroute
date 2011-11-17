@@ -8,16 +8,18 @@ class Responder(object):
 
     def __init__(self, module, app=None):
         if isinstance(module, basestring):
-            self.mod = __import__(module)
+            self.handler = __import__(module)
         else:
-            self.mod = module
-        self.debug = getattr(self.mod, 'debug', False)
+            self.handler = module
+        self.debug = getattr(self.handler, 'debug', False)
         self.lastmod = self.mtime
         self.app = app
 
     @property
     def mtime(self):
-        return os.stat(self.mod.__file__).st_mtime
+        if hasattr(self.handler, '__file__'):
+            return os.stat(self.handler.__file__).st_mtime
+        return 0
 
     def parse_input(self, env):
         path = deque(s for s in env['PATH_INFO'].split('/') if s)
@@ -28,8 +30,8 @@ class Responder(object):
         mtime = self.mtime
         if mtime > self.lastmod:
             print('Responder: changes to module detected, reloading..')
-            self.mod = reload(self.mod)
-            self.debug = getattr(self.mod, 'debug', False)
+            self.handler = reload(self.handler)
+            self.debug = getattr(self.handler, 'debug', False)
             self.lastmod = mtime
 
     def __call__(self, env, start_response):
@@ -37,13 +39,13 @@ class Responder(object):
             self.maybee_reload()
 
         path, args = self.parse_input(env)
-        named = getattr(self.mod, path[0], False)
+        named = getattr(self.handler, path[0], False)
         if named:
             status, headers, response = named(*path, **args)
         elif self.app:
             return self.app(env, start_response)
         else:
-            status, headers, response = self.mod.default(*path, **args)
+            status, headers, response = self.handler.default(*path, **args)
 
         try:
             if not headers:
