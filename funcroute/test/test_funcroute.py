@@ -1,7 +1,7 @@
 import webtest
 import mock
 
-from funcroute import Matcher
+from funcroute import *
 
 from funcroute.test import support
 from funcroute.test.support import Expando
@@ -52,3 +52,13 @@ def test_any_to_default(defaultfix):
 def test_missing(wtfix):
     handler, responder, wt = wtfix
     res = wt.get('/unavailable', status=404)
+
+def test_text_defaults():
+    assert text('foo') == ('200 OK', {'Content-Type': 'text/plain'}, ('foo',))
+
+def test_text_defaults():
+    assert html('foo') == ('200 OK', {'Content-Type': 'text/html'}, ('foo',))
+
+def test_html_other_status():
+    assert (html('foo', '404 NOT FOUND') ==
+            ('404 NOT FOUND', {'Content-Type': 'text/html'}, ('foo',)) )

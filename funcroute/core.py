@@ -68,6 +68,17 @@ class Matcher(object):
                            [('Content-Type', 'text/plain')])
             return ('Resource not found',)
 
+def send(body, mime='text/html', status='status 200', **extra_headers):
+    headers = {'Content-Type': mime}
+    headers.update(extra_headers)
+    return (status, headers, (body,))
+
+def text(body, status='200 OK', **extra_headers):
+    return send(body, 'text/plain', status, **extra_headers)
+
+def html(body, status='200 OK', **extra_headers):
+    return send(body, 'text/html', status, **extra_headers)
+
 if __name__ == '__main__':
     rsp = Matcher('labmod')
     httpd = make_server('', 8000, rsp)
