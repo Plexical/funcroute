@@ -27,7 +27,7 @@ class Matcher(object):
     def parse_input(self, env):
         path = deque(s for s in env['PATH_INFO'].split('/') if s)
         qs = env.get('QUERY_STRING', False)
-        return path and path or deque(('root',)), qs and parse_qs(qs) or {}
+        return path and path or tuple(), qs and parse_qs(qs) or {}
 
     def maybee_reload(self):
         mtime = self.mtime
@@ -42,7 +42,7 @@ class Matcher(object):
             self.maybee_reload()
 
         path, args = self.parse_input(env)
-        named = getattr(self.handler, path[0], False)
+        named = getattr(self.handler, path and path[0] or 'root', False)
         try:
             if named:
                 status, headers, response = named(*path, **args)
