@@ -1,9 +1,9 @@
 .. -*- mode: rst -*-
 .. -*- Coding: utf-8 -*-
 
-===========
- Responder
-===========
+=========
+funcroute
+=========
 
 Functional WSGI_ experiment. Follows along this_ nice introductory text.
 

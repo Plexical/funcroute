@@ -1,10 +1,10 @@
 import webtest
 import mock
 
-from responder import Responder
+from funcroute import Responder
 
-from responder.test import support
-from responder.test.support import Expando
+from funcroute.test import support
+from funcroute.test.support import Expando
 
 def pytest_funcarg__responder(request):
     return Responder(Expando())
@@ -25,7 +25,7 @@ def pytest_funcarg__defaultfix(request):
     return (handler, responder, wt, default)
 
 def test_init_w_str():
-    assert Responder('responder.labmod')
+    assert Responder('funcroute.labmod')
 
 def test_init_w_obj():
     assert Responder(mock.Mock())
