@@ -42,6 +42,8 @@ class Matcher(object):
             self.maybee_reload()
 
         path, args = self.parse_input(env)
+        if 'wsgi.input' in env:
+            args['funcroute_stream'] = env['wsgi.input']
         named = getattr(self.handler, path and path[0] or 'root', False)
         try:
             if named:
