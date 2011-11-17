@@ -9,7 +9,11 @@ import sys
 from paver.easy import *
 from paver.setuputils import setup
 
-from responder import meta
+try:
+    from responder import meta
+except ImportError:
+    sys.path.append('.')
+    from responder import meta
 
 setup(
     name=meta.name,
