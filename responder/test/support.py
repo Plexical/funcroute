@@ -12,3 +12,5 @@ class Expando(object):
 def fake_wsgi_env(**extra):
     env = {'QUERY_STRING': '',
            'PATH_INFO': '/example/path'}
+    env.update(extra)
+    return env

@@ -6,11 +6,11 @@ from cgi import parse_qs, escape
 
 class Responder(object):
 
-    def __init__(self, module, app=None):
-        if isinstance(module, basestring):
-            self.handler = __import__(module)
+    def __init__(self, handler, app=None):
+        if isinstance(handler, basestring):
+            self.handler = __import__(handler)
         else:
-            self.handler = module
+            self.handler = handler
         self.debug = getattr(self.handler, 'debug', False)
         self.lastmod = self.mtime
         self.app = app
@@ -24,7 +24,7 @@ class Responder(object):
     def parse_input(self, env):
         path = deque(s for s in env['PATH_INFO'].split('/') if s)
         qs = env.get('QUERY_STRING', False)
-        return path, qs and parse_qs(qs) or {}
+        return path and path or deque(('root',)), qs and parse_qs(qs) or {}
 
     def maybee_reload(self):
         mtime = self.mtime
@@ -40,14 +40,14 @@ class Responder(object):
 
         path, args = self.parse_input(env)
         named = getattr(self.handler, path[0], False)
-        if named:
-            status, headers, response = named(*path, **args)
-        elif self.app:
-            return self.app(env, start_response)
-        else:
-            status, headers, response = self.handler.default(*path, **args)
-
         try:
+            if named:
+                status, headers, response = named(*path, **args)
+            elif self.app:
+                return self.app(env, start_response)
+            else:
+                status, headers, response = self.handler.default(*path, **args)
+
             if not headers:
                 headers = {'Content-Type': 'text/html'}
             start_response(status, [(k, v) for k, v in headers.iteritems()])
