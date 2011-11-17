@@ -1,3 +1,4 @@
+import webtest
 import mock
 
 from responder import Responder
@@ -5,16 +6,23 @@ from responder import Responder
 from responder.test import support
 from responder.test.support import Expando
 
-def pytest_funcarg__env(request):
-    return support.fake_wsgi_env()
-
 def pytest_funcarg__responder(request):
     return Responder(Expando())
 
 def pytest_funcarg__default(request):
     default = mock.Mock()
-    default.return_value = ('status', None, ('default response',))
+    default.return_value = ('200 OK', None, ('default response',))
     return default
+
+def pytest_funcarg__wtfix(request):
+    responder = pytest_funcarg__responder(request)
+    return (responder.handler, responder, webtest.TestApp(responder))
+
+def pytest_funcarg__defaultfix(request):
+    (handler, responder, wt), default = (pytest_funcarg__wtfix(request),
+                                         pytest_funcarg__default(request))
+    handler.default = default
+    return (handler, responder, wt, default)
 
 def test_init_w_str():
     assert Responder('responder.labmod')
@@ -22,18 +30,21 @@ def test_init_w_str():
 def test_init_w_obj():
     assert Responder(mock.Mock())
 
-def test_root_to_default(env, default, responder):
-    responder.handler.default = default
-    start_resp = mock.Mock()
-    env['PATH_INFO'] = '/'
-    resp = responder(env, start_resp)
-    start_resp.assert_called_with('status', [('Content-Type', 'text/html')])
-    assert resp == ('default response',)
+def test_root_to_default(defaultfix):
+    handler, responder, wt, default = defaultfix
+    res = wt.get('/')
+    assert res.status_int == 200
+    assert res.normal_body == 'default response'
 
-def test_root_to_root(env, default, responder):
-    responder.handler.root = default
-    start_resp = mock.Mock()
-    env['PATH_INFO'] = '/'
-    resp = responder(env, start_resp)
-    start_resp.assert_called_with('status', [('Content-Type', 'text/html')])
-    assert resp == ('default response',)
+def test_root_to_root(wtfix, default):
+    handler, responder, wt = wtfix
+    handler.root = default
+    res = wt.get('/')
+    assert res.status_int == 200
+    assert res.normal_body == 'default response'
+
+def test_any_to_default(defaultfix):
+    handler, responder, wt, default = defaultfix
+    res = wt.get('/whatever')
+    assert res.status_int == 200
+    assert res.normal_body == 'default response'

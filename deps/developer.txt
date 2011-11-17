@@ -4,3 +4,4 @@ IPython
 ipdb
 mock
 paver
+WebTest
