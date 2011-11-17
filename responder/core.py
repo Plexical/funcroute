@@ -7,7 +7,7 @@ from cgi import parse_qs, escape
 class Responder(object):
 
     def __init__(self, module, app=None):
-        if isinstance(module, 'basestring'):
+        if isinstance(module, basestring):
             self.mod = __import__(module)
         else:
             self.mod = module
