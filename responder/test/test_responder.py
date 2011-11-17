@@ -48,3 +48,7 @@ def test_any_to_default(defaultfix):
     res = wt.get('/whatever')
     assert res.status_int == 200
     assert res.normal_body == 'default response'
+
+def test_missing(wtfix):
+    handler, responder, wt = wtfix
+    res = wt.get('/unavailable', status=404)

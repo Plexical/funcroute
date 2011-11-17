@@ -4,6 +4,9 @@ from collections import deque
 from wsgiref.simple_server import make_server
 from cgi import parse_qs, escape
 
+class Missing(Exception):
+    pass
+
 class Responder(object):
 
     def __init__(self, handler, app=None):
@@ -46,7 +49,11 @@ class Responder(object):
             elif self.app:
                 return self.app(env, start_response)
             else:
-                status, headers, response = self.handler.default(*path, **args)
+                try:
+                    status, headers, response = self.handler.default(*path,
+                                                                      **args)
+                except AttributeError:
+                    raise Missing
 
             if not headers:
                 headers = {'Content-Type': 'text/html'}
@@ -55,7 +62,11 @@ class Responder(object):
         except StandardError, e:
             start_response('500 INTERNAL SERVER ERROR',
                            [('Content-Type', 'text/plain')])
-            return ('XXX TBD: Response method raised exception',)
+            return ('Internal server error',)
+        except Missing, e:
+            start_response('404 NOT FOUND',
+                           [('Content-Type', 'text/plain')])
+            return ('Resource not found',)
 
 if __name__ == '__main__':
     rsp = Responder('labmod')
