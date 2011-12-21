@@ -1,6 +1,6 @@
 py
 pytest
-IPython
+IPython==0.11
 ipdb
 mock
 paver
