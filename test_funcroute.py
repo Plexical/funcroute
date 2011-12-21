@@ -5,8 +5,16 @@ from json import loads, dumps
 
 from funcroute import *
 
-from funcroute.test import support
-from funcroute.test.support import Expando
+class Expando(object):
+    """
+    A completely promiscuous object.
+    """
+    def __init__(self, **attrs):
+        self.update(attrs)
+
+    def update(self, attrs):
+        self.__dict__.update(attrs)
+        return self
 
 def pytest_funcarg__responder(request):
     return Matcher(Expando())
@@ -27,7 +35,7 @@ def pytest_funcarg__defaultfix(request):
     return (handler, responder, wt, default)
 
 def test_init_w_str():
-    assert Matcher('funcroute.labmod')
+    assert Matcher('labmod')
 
 def test_init_w_obj():
     assert Matcher(mock.Mock())

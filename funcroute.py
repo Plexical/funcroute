@@ -6,6 +6,9 @@ import webob
 from wsgiref.simple_server import make_server
 from cgi import parse_qs, escape
 
+name = 'funcroute'
+version = '0.2dev'
+
 class Missing(Exception):
     pass
 

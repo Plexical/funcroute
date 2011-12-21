@@ -9,16 +9,10 @@ import sys
 from paver.easy import *
 from paver.setuputils import setup
 
-try:
-    from funcroute import meta
-except ImportError:
-    sys.path.append('.')
-    from funcroute import meta
-
 setup(
-    name=meta.name,
-    packages=('funcroute'),
-    version=meta.version,
+    name='funcroute',
+    py_modules=('funcroute'),
+    version='0.2dev',
     author='Jacob Oscarson',
     author_email='jacob@plexical.com',
     install_requires=open(os.path.join('deps',
