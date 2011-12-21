@@ -1,3 +1,0 @@
-# -*- mode: shell-script -*-
-# Watcher
-rst2html README.rst >~/lnk/ram/funcroute.html
